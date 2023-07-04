@@ -1,194 +1,173 @@
-const students = [
-    { ID: 1, name: 'Alice', age: 21, grade: '9.2', degree: 'Btech', email: 'alice@example.com' },
-    { ID: 2, name: 'Bob', age: 22, grade: '8.9', degree: 'MBA', email: 'bob@example.com' },
-    { ID: 3, name: 'Charlie', age: 20, grade: '8.8', degree: 'Arts', email: 'charlie@example.com' }
-  ];
+//students data array with dummy values
+let studentData = [{ID: 1,
+    name: "lucky",
+    age: 26,
+    gpa: 10,
+    degree: "B.TECH",
+    email: "lucky@gmail.com"},
+{ID: 2,
+    name: "mintu",
+    age: 26,
+    gpa: 9.8,
+    degree: "MCA",
+    email: "mintu@gmail.com"},
+{ID: 3,
+    name: "amit",
+    age: 26,
+    gpa: 8.9,
+    degree: "BCA",
+    email: "amit@gmail.com"},
+{ID: 4,
+    name: "bhanu",
+    age: 26,
+    gpa: 8,
+    degree: "M.TECH",
+    email: "bhanu@gmail.com"}]
 
-  const studentForm = document.getElementById("studentForm");
-  const studentTableBody = document.getElementById("studentTableBody");
-  const searchInput = document.getElementById("searchInput");
-
-  let editMode = false;
-  let currentStudentId = null;
-
-  renderStudents();
-
-  studentForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const nameInput = document.getElementById("nameInput");
-    const emailInput = document.getElementById("emailInput");
-    const gpaInput = document.getElementById("gpaInput");
-    const ageInput = document.getElementById("ageInput");
-    const degreeInput = document.getElementById("degreeInput");
-
-
-    const name = nameInput.value;
-    const email = emailInput.value;
-    const gpa = gpaInput.value;
-    const age = parseInt(ageInput.value);
-    const degree = degreeInput.value;
+//count to keep tract of Student ID
+let count = 4;
 
 
-    if (editMode) {
-      updateStudent(currentStudentId, name, email, age, gpa, degree);
-    } else {
-      addStudent(name, email, gpa, age, degree);
+//initially calling displayData function to display dummy data
+displayData(studentData);
+
+//function to display data whenever user does any manupulation
+function displayData(arr){
+    let container = document.getElementById("table-id")
+    container.innerHTML = ``;
+    let str = `
+    <tr>
+        <td>ID</td>
+        <td>Student Name</td>
+        <td>Email</td>
+        <td>Age</td>
+        <td>GPA</td>
+        <td>Degree</td>
+    </tr>`;
+    for(let i = 0;i<arr.length;i++){
+        str = str + `<tr>
+        <td>${arr[i].ID}</td>
+        <td>${arr[i].name}</td>
+        <td>${arr[i].email}</td>
+        <td>${arr[i].age}</td>
+        <td>${arr[i].gpa}</td>
+        <td class="degree-edit-trash">
+        <div>${arr[i].degree}</div>
+        <div>
+        <button id="edit-button" class="btn" onclick="editData(event)">
+        <img src="assets/images/pic.png" id="edit-id${arr[i].ID}" alt="edit">
+        </button>
+        <button id="trash-button" class="btn" onclick="deleteData(event)">
+        <img src="assets/images/trash.png" id="trash-id${arr[i].ID}" alt="trash">
+        </button>
+        </div>
+        </td>
+    </tr>
+        `
+}
+    container.innerHTML = str;
+}
+
+
+//function to search student
+document.getElementById("search-student-id").addEventListener("keyup",Event=>{
+    let searchTerm = document.getElementById("search-student-id").value.trim().toLowerCase();
+    let filteredData = studentData.filter(item=>{
+        let sName = item.name.toLowerCase();
+        let sEmail = item.email.toLowerCase();
+        let sDegree = item.degree.toLowerCase();
+        console.log(sName,sDegree,sEmail,searchTerm);
+        return sName.includes(searchTerm) || sEmail.includes(searchTerm) || sDegree.includes(searchTerm);
+    })
+    displayData(filteredData);
+})
+
+//function to add Student
+function addStudent(){
+    let name = document.getElementById("name").value;
+    let age = document.getElementById("age").value;
+    let email = document.getElementById("email").value;
+    let gpa = document.getElementById("gpa").value;
+    let degree = document.getElementById("degree").value;
+    let obj = { ID: ++count,
+        name: name,
+        age: age,
+        gpa: gpa,
+        degree: degree,
+        email: email 
+}
+//push to studentData array
+studentData.push(obj);
+//display updated array
+displayData(studentData);
+//empty the input feilds
+document.getElementById("name").value = '';
+document.getElementById("age").value = '';
+document.getElementById("email").value = '';
+document.getElementById("gpa").value = '';
+document.getElementById("degree").value = '';
+}
+
+
+
+//function to edit students data
+function editData(event){
+    //first store the data in variable
+    let btnID = event.target.id;  //edit-id
+    let extractedID = Number(btnID.substring(7));
+
+    //changing button colour and content
+    let toggle = document.getElementById("add-button-id");
+    toggle.textContent = '';
+    toggle.textContent = 'Edit Student';
+    toggle.style.backgroundColor = 'black';
+    toggle.style.color = 'white';
+
+    for(let i = 0;i<studentData.length;i++){
+        if(studentData[i].ID == extractedID){
+            document.getElementById("name").value = studentData[i].name;
+            document.getElementById("email").value = studentData[i].email;
+            document.getElementById("age").value = studentData[i].age;
+            document.getElementById("gpa").value = studentData[i].gpa;
+            document.getElementById("degree").value = studentData[i].degree;
+            studentData.splice(i,1);
+            displayData(studentData);
+            break;
+        }
     }
 
-    studentForm.reset();
-    editMode = false;
-    currentStudentId = null;
-    renderStudents();
-  });
 
-  searchInput.addEventListener("input", function () {
-    const searchTerm = searchInput.value.toLowerCase();
-    const filteredStudents = students.filter(function (student) {
-      return (
-        student.name.toLowerCase().includes(searchTerm) ||
-        student.email.toLowerCase().includes(searchTerm) ||
-        student.degree.toLowerCase().includes(searchTerm)
-      );
-    });
-    renderStudents(filteredStudents);
-  });
-
-  function renderStudents(studentsArray = students) {
-    studentTableBody.innerHTML = "";
-
-    studentsArray.forEach(function (student) {
-      const row = document.createElement("tr");
-
-      const idCell = document.createElement("td");
-      idCell.innerText = student.ID;
-      row.appendChild(idCell);
-
-      const nameCell = document.createElement("td");
-      nameCell.innerText = student.name;
-      row.appendChild(nameCell);
-
-      const emailCell = document.createElement("td");
-      emailCell.innerText = student.email;
-      row.appendChild(emailCell);
-
-      const ageCell = document.createElement("td");
-      ageCell.innerText = student.age;
-      row.appendChild(ageCell);
-
-      const gradeCell = document.createElement("td");
-      gradeCell.innerText = student.grade;
-      row.appendChild(gradeCell);
-
-      const degreeCell = document.createElement("td");
-      degreeCell.innerText = student.degree;
-      row.appendChild(degreeCell);
+    //reverting button to original state
+    toggle.addEventListener("click",()=>{
+    toggle.textContent = '';
+    toggle.textContent = 'Add Student';
+    toggle.style.backgroundColor = 'white';
+    toggle.style.color = 'black';
+    toggle.style.border = '1px solid';
+    })
+    
+}
 
 
-      const actionsCell = document.createElement("td");
-      const editButton = document.createElement("button");
-
-      editButton.style.backgroundColor="black";
-      editButton.style.border="none"
-
- const img1 = document.createElement("img");
-
-
- img1.src = "./image/edit.png";
- img1.alt = "Img";
-
-
-
- editButton.appendChild(img1);
-      editButton.addEventListener("click", function () {
-        fillFormForEdit(student);
-      });
-      actionsCell.appendChild(editButton);
-
-      const deleteButton = document.createElement("button");
-         deleteButton.id="imageContainer";
-         deleteButton.style.backgroundColor="black";
-         deleteButton.style.border="none"
-
-    const img = document.createElement("img");
-
-    img.src = "./image/trash.png";
-    img.alt = "Img";
-
-    deleteButton.appendChild(img);
-      deleteButton.addEventListener("click", function () {
-        deleteStudent(student.ID);
-        renderStudents();
-      });
-      actionsCell.appendChild(deleteButton);
-
-      row.appendChild(actionsCell);
-
-      studentTableBody.appendChild(row);
-    });
-  }
-//Add student detail function
-  function addStudent(name, email, grade, age, degree ) {
-    const newStudent = {
-      ID: students.length + 1,
-      name: name,
-      email: email,
-      age: age,
-      grade: grade,
-      degree: degree
-      
-    };
-
-    students.push(newStudent);
-  }
-//edit details of student
-  function updateStudent(studentId, name, email, age, grade, degree) {
-    const student = students.find(function (student) {
-      return student.ID === studentId;
-    });
-
-    if (student) {
-      student.name = name;
-      student.age = age;
-      student.grade = grade;
-      student.degree = degree;
-      student.email = email;
+//function to delete student data
+function deleteData(event){
+    //document.getElementById("table-id").innerHTML = ``;
+    let btnID = event.target.id;  //trash-id
+    let extractedID = Number(btnID.substring(8));
+    //console.log(extractedID);
+    for(let i = 0;i<studentData.length;i++){
+        if(studentData[i].ID == extractedID){
+            studentData.splice(i,1);
+        }
     }
-  }
-//delete details of student
-  function deleteStudent(studentId) {
-    const index = students.findIndex(function (student) {
-      return student.ID === studentId;
-    });
+    displayData(studentData);
+}
 
-    if (index !== -1) {
-      students.splice(index, 1);
-    }
-  }
-// update details fill
-  function fillFormForEdit(student) {
-    const nameInput = document.getElementById("nameInput");
-    const ageInput = document.getElementById("ageInput");
-    const gradeInput = document.getElementById("gradeInput");
-    const degreeInput = document.getElementById("degreeInput");
-    const emailInput = document.getElementById("emailInput");
 
-    nameInput.value = student.name;
-    ageInput.value = student.age;
-    gpaInput.value = student.grade;
-    degreeInput.value = student.degree;
-    emailInput.value = student.email;
 
-    btn.innerText = "Edit Student";
-    cancelButton.style.display = "inline-block";
-    editMode = true;
-    currentStudentId = student.ID;
-  }
 
-  cancelButton.addEventListener("click", function () {
-    studentForm.reset();
-    editMode = false;
-    currentStudentId = null;
-    submitButton.innerText = "Add Student";
-    cancelButton.style.display = "none";
-  });
+
+
+
+
+
