@@ -55,10 +55,10 @@ function displayData(arr){
         <div>${arr[i].degree}</div>
         <div>
         <button id="edit-button" class="btn" onclick="editData(event)">
-        <img src="assets/images/pic.png" id="edit-id${arr[i].ID}" alt="edit">
+        <img src="image/edit.png" id="edit-id${arr[i].ID}" alt="edit">
         </button>
         <button id="trash-button" class="btn" onclick="deleteData(event)">
-        <img src="assets/images/trash.png" id="trash-id${arr[i].ID}" alt="trash">
+        <img src="images/delete.png" id="trash-id${arr[i].ID}" alt="trash">
         </button>
         </div>
         </td>
