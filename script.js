@@ -58,7 +58,7 @@ function displayData(arr){
         <img src="image/edit.png" id="edit-id${arr[i].ID}" alt="edit">
         </button>
         <button id="trash-button" class="btn" onclick="deleteData(event)">
-        <img src="images/delete.png" id="trash-id${arr[i].ID}" alt="trash">
+        <img src="images/trash.png" id="trash-id${arr[i].ID}" alt="trash">
         </button>
         </div>
         </td>
